@@ -1,4 +1,9 @@
 
+using CapitalPlacement.Abstracts;
+using CapitalPlacement.DataLayer;
+using CapitalPlacement.DataTransferModels;
+using CapitalPlacement.Services;
+
 namespace CapitalPlacement
 {
     public class Program
@@ -8,25 +13,21 @@ namespace CapitalPlacement
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.Configure<DBSettings>(builder.Configuration.GetSection(nameof(DBSettings)));
+            builder.Services.AddSingleton<DBContext>();
+            builder.Services.AddScoped<IProgramService, ProgramService>();
+            builder.Services.AddScoped<IApplicationService, ApplicationService>();
+            builder.Services.AddScoped<IWorkflowService, WorkflowService>();
+            builder.Services.AddAutoMapper(typeof(Program));
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
